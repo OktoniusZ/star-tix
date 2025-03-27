@@ -1,28 +1,82 @@
-import { ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import { BellIcon, MenuIcon, TvIcon, BookmarkIcon } from '../components/Icons';
+import { useState, useEffect } from 'react';
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { BellIcon, MenuIcon } from '../components/Icons';
 import CategoryPills from '../components/CategoryPills';
 import TrendingCard from '../components/TrendingCard';
 import RecommendationCard from '../components/RecommendationCard';
-import { images } from '@/constants/images'
+import { fetchTrendingMovies, fetchPopularMovies } from '../services/tmdb';
 
-const trendingData = [
-    { id: 1, title: 'Demon Slayer', rating: 4.8, image: images.anime1 },
-    { id: 2, title: 'Attack on Titan', rating: 4.9, image: images.anime2 },
-    { id: 3, title: 'Attack on Titan', rating: 4.9, image: images.anime3 },
-    { id: 4, title: 'Attack on Titan', rating: 4.9, image: images.anime4 },
-];
-
-const recommendationsData = [
-    { id: 1, title: 'Jujutsu Kaisen', rating: 4.7, views: '1.2M', image: images.anime1, bookmarked: false },
-    { id: 2, title: 'Jujutsu Kaisen', rating: 4.7, views: '1.2M', image: images.anime2, bookmarked: false },
-    { id: 3, title: 'Jujutsu Kaisen', rating: 4.7, views: '1.2M', image: images.anime3, bookmarked: false },
-    { id: 4, title: 'Jujutsu Kaisen', rating: 4.7, views: '1.2M', image: images.anime4, bookmarked: false },
-];
+interface MovieCard {
+    id: number;
+    title: string;
+    rating: number;
+    image: { uri: string } | number; // Can be URI or local require
+    views?: string;
+    bookmarked?: boolean;
+}
 
 export default function Home() {
+    const [trendingData, setTrendingData] = useState<MovieCard[]>([]);
+    const [recommendationsData, setRecommendationsData] = useState<MovieCard[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [trending, popular] = await Promise.all([
+                    fetchTrendingMovies(),
+                    fetchPopularMovies()
+                ]);
+
+                setTrendingData(trending.map(movie => ({
+                    id: movie.id,
+                    title: movie.title,
+                    rating: movie.vote_average / 2, // Convert 10-point scale to 5-point
+                    image: movie.poster_path
+                        ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
+                        : require('../assets/placeholder.png')
+                })));
+
+                setRecommendationsData(popular.map(movie => ({
+                    id: movie.id,
+                    title: movie.title,
+                    rating: movie.vote_average / 2,
+                    views: `${Math.round(movie.popularity / 1000)}K`,
+                    image: movie.poster_path
+                        ? { uri: `https://image.tmdb.org/t/p/w300${movie.poster_path}` }
+                        : require('../assets/placeholder.png'),
+                    bookmarked: false
+                })));
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Unknown error');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
+    }, []);
+
+    if (loading) {
+        return (
+            <View className="flex-1 bg-black justify-center items-center">
+                <ActivityIndicator size="large" color="#2DD4BF" />
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View className="flex-1 bg-black justify-center items-center p-4">
+                <Text className="text-red-500 text-center">Error: {error}</Text>
+            </View>
+        );
+    }
+
     return (
         <View className="flex-1 bg-black">
-            {/* 1. Header Section */}
+            {/* Header Section */}
             <View className="flex-row justify-between items-center p-4 border-b border-gray-800">
                 <TouchableOpacity>
                     <MenuIcon />
@@ -35,7 +89,7 @@ export default function Home() {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* 2. Category Section */}
+                {/* Category Section */}
                 <View className="px-4 mt-4">
                     <Text className="text-white font-bold text-lg mb-3">Kategori</Text>
                     <CategoryPills
@@ -44,7 +98,7 @@ export default function Home() {
                     />
                 </View>
 
-                {/* 3. Trending Section */}
+                {/* Trending Section */}
                 <View className="mt-6 px-4">
                     <View className="flex-row justify-between items-center mb-3">
                         <Text className="text-white font-bold text-lg">Trending</Text>
@@ -59,7 +113,7 @@ export default function Home() {
                     </ScrollView>
                 </View>
 
-                {/* 4. Recommendation Section */}
+                {/* Recommendation Section */}
                 <View className="mt-6 px-4 pb-20">
                     <Text className="text-white font-bold text-lg mb-3">Rekomendasi</Text>
                     {recommendationsData.map(item => (

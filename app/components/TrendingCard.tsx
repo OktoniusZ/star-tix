@@ -1,18 +1,29 @@
+// Example TrendingCard.tsx
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 
-export default function TrendingCard({ item }: { item: any }) {
+interface TrendingCardProps {
+    item: {
+        id: number;
+        title: string;
+        rating: number;
+        image: { uri: string } | number;
+    };
+}
+
+export default function TrendingCard({ item }: TrendingCardProps) {
     return (
         <TouchableOpacity className="mr-4 w-40">
             <Image
-                source={typeof item.image === 'number'
-                    ? item.image
-                    : { uri: item.image }}
+                source={item.image}
                 className="w-full h-56 rounded-xl"
+                resizeMode="cover"
             />
-            <Text className="text-white mt-2 font-medium" numberOfLines={1}>{item.title}</Text>
+            <Text className="text-white mt-2 font-medium" numberOfLines={1}>
+                {item.title}
+            </Text>
             <View className="flex-row items-center mt-1">
-                {/* <StarIcon filled /> */}
-                <Text className="text-yellow-400 ml-1">{item.rating}</Text>
+                <Text className="text-yellow-400">⭐</Text>
+                <Text className="text-yellow-400 ml-1">{item.rating.toFixed(1)}</Text>
             </View>
         </TouchableOpacity>
     );
