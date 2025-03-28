@@ -1,4 +1,5 @@
 // Example TrendingCard.tsx
+import { router } from 'expo-router';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 
 interface TrendingCardProps {
@@ -12,7 +13,7 @@ interface TrendingCardProps {
 
 export default function TrendingCard({ item }: TrendingCardProps) {
     return (
-        <TouchableOpacity className="mr-4 w-40">
+        <TouchableOpacity className="mr-4 w-40" onPress={() => router.push(`/movie/${item.id}`)}>
             <Image
                 source={item.image}
                 className="w-full h-56 rounded-xl"

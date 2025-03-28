@@ -66,7 +66,6 @@ const _layout = () => {
                     ),
                 }}
             />
-
             <Tabs.Screen
                 name="save"
                 options={{

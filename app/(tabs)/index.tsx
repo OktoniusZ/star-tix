@@ -4,13 +4,13 @@ import { BellIcon, MenuIcon } from '../components/Icons';
 import CategoryPills from '../components/CategoryPills';
 import TrendingCard from '../components/TrendingCard';
 import RecommendationCard from '../components/RecommendationCard';
-import { fetchTrendingMovies, fetchPopularMovies } from '../services/tmdb';
+import { fetchTrendingMovies, fetchPopularMovies, fetchGenres, fetchMoviesByGenre } from '../services/tmdb';
 
 interface MovieCard {
     id: number;
     title: string;
     rating: number;
-    image: { uri: string } | number; // Can be URI or local require
+    image: { uri: string } | number;
     views?: string;
     bookmarked?: boolean;
 }
@@ -18,21 +18,28 @@ interface MovieCard {
 export default function Home() {
     const [trendingData, setTrendingData] = useState<MovieCard[]>([]);
     const [recommendationsData, setRecommendationsData] = useState<MovieCard[]>([]);
+    const [genreData, setGenreData] = useState<MovieCard[]>([]);
+    const [genres, setGenres] = useState<{ id: number, name: string }[]>([]);
+    const [activeGenre, setActiveGenre] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [trending, popular] = await Promise.all([
+                const [trending, popular, genreList] = await Promise.all([
                     fetchTrendingMovies(),
-                    fetchPopularMovies()
+                    fetchPopularMovies(),
+                    fetchGenres()
                 ]);
+
+                setGenres(genreList);
+                setActiveGenre(genreList[0]?.id); // Set first genre as active
 
                 setTrendingData(trending.map(movie => ({
                     id: movie.id,
                     title: movie.title,
-                    rating: movie.vote_average / 2, // Convert 10-point scale to 5-point
+                    rating: movie.vote_average / 2,
                     image: movie.poster_path
                         ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
                         : require('../assets/placeholder.png')
@@ -42,7 +49,7 @@ export default function Home() {
                     id: movie.id,
                     title: movie.title,
                     rating: movie.vote_average / 2,
-                    views: `${Math.round(movie.popularity / 1000)}K`,
+                    views: `${Math.max(1, Math.round(movie.popularity / 1000))}K`,
                     image: movie.poster_path
                         ? { uri: `https://image.tmdb.org/t/p/w300${movie.poster_path}` }
                         : require('../assets/placeholder.png'),
@@ -57,6 +64,28 @@ export default function Home() {
 
         loadData();
     }, []);
+
+    useEffect(() => {
+        if (activeGenre) {
+            const loadGenreMovies = async () => {
+                try {
+                    const movies = await fetchMoviesByGenre(activeGenre);
+                    setGenreData(movies.map(movie => ({
+                        id: movie.id,
+                        title: movie.title,
+                        rating: movie.vote_average / 2,
+                        image: movie.poster_path
+                            ? { uri: `https://image.tmdb.org/t/p/w300${movie.poster_path}` }
+                            : require('../assets/placeholder.png'),
+                        views: `${Math.max(1, Math.round(movie.popularity / 1000))}K`
+                    })));
+                } catch (err) {
+                    console.error('Error fetching genre movies:', err);
+                }
+            };
+            loadGenreMovies();
+        }
+    }, [activeGenre]);
 
     if (loading) {
         return (
@@ -89,14 +118,29 @@ export default function Home() {
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Category Section */}
+                {/* Category Section - Now with TMDB Genres */}
                 <View className="px-4 mt-4">
                     <Text className="text-white font-bold text-lg mb-3">Kategori</Text>
                     <CategoryPills
-                        categories={['Anime', 'K-Drama', 'Horror', 'Comedy']}
-                        activeCategory="Anime"
+                        categories={genres}
+                        activeCategory={activeGenre}
+                        onCategoryPress={(genreId) => setActiveGenre(genreId)}
                     />
                 </View>
+
+                {/* Genre-Specific Movies */}
+                {genreData.length > 0 && (
+                    <View className="mt-4 px-4">
+                        <Text className="text-white font-bold text-lg mb-3">
+                            {genres.find(g => g.id === activeGenre)?.name || 'Selected Genre'}
+                        </Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="py-2">
+                            {genreData.map(item => (
+                                <TrendingCard key={item.id} item={item} />
+                            ))}
+                        </ScrollView>
+                    </View>
+                )}
 
                 {/* Trending Section */}
                 <View className="mt-6 px-4">

@@ -1,13 +1,14 @@
 // app/components/RecommendationCard.tsx
 import { View, Text, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { StarIcon, TvIcon, BookmarkIcon } from './Icons';
+import { router } from 'expo-router';
 
 interface RecommendationItem {
     id: number;
     title: string;
     rating: number;
     views: string;
-    image: ImageSourcePropType; // Handles both require() and {uri: string}
+    image: ImageSourcePropType;
     bookmarked: boolean;
 }
 
@@ -17,13 +18,13 @@ interface RecommendationCardProps {
 
 export default function RecommendationCard({ item }: RecommendationCardProps) {
     return (
-        <TouchableOpacity className="flex-row mb-4 bg-gray-900 rounded-lg overflow-hidden">
+        <TouchableOpacity className="flex-row mb-4 bg-gray-900 rounded-lg overflow-hidden" onPress={() => router.push(`/movie/${item.id}`)}>
             {/* Thumbnail Image */}
             <Image
                 source={item.image}
                 className="w-32 h-20"
                 resizeMode="cover"
-                // defaultSource={require('@/assets/placeholder.png')} // Fallback image
+            // defaultSource={require('@/assets/placeholder.png')} // Fallback image
             />
 
             {/* Content */}
