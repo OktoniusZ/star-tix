@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { fetchMovieDetails, TMDBMovieDetails } from '../services/tmdb';
+import { fetchMovieDetails } from '../services/tmdb';
 import { Stack } from 'expo-router';
 
 type TabType = 'synopsis' | 'cast' | 'details';
@@ -21,7 +21,7 @@ export default function MovieDetails() {
                 const data = await fetchMovieDetails(Number(id));
                 setMovie(data);
             } catch (err) {
-                setError(err instanceof Error ? err.message : 'Unknown error');
+                setError(err.message);
             } finally {
                 setLoading(false);
             }
@@ -52,26 +52,21 @@ export default function MovieDetails() {
         );
     }
 
-    const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : null;
+    // Helper to get year from release date
+    const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : '';
 
     return (
         <>
-            <Stack.Screen options={{ headerShown: false, statusBarBackgroundColor: 'black' }} />
+            <Stack.Screen options={{ headerShown: false, statusBarBackgroundColor: 'black'}} />
             <ScrollView className="flex-1 bg-black">
                 {/* Background & Header */}
                 <View className="relative h-96">
-                    {movie.backdrop_path ? (
-                        <>
-                            <Image
-                                source={{ uri: `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` }}
-                                className="absolute w-full h-full"
-                                blurRadius={5}
-                            />
-                            <View className="absolute inset-0 bg-black/60" />
-                        </>
-                    ) : (
-                        <View className="absolute inset-0 bg-gray-900" />
-                    )}
+                    <Image
+                        source={{ uri: `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}` }}
+                        className="absolute w-full h-full"
+                        blurRadius={5}
+                    />
+                    <View className="absolute inset-0 bg-black/60" />
 
                     <TouchableOpacity
                         onPress={() => router.back()}
@@ -90,11 +85,8 @@ export default function MovieDetails() {
                 {/* Movie Title & Rating */}
                 <View className="px-4 mt-4">
                     <Text className="text-white text-2xl font-bold">
-                        {movie.title}
+                        {movie.title} {releaseYear && `(${releaseYear})`}
                     </Text>
-                    {releaseYear && (
-                        <Text className="text-gray-400">({releaseYear})</Text>
-                    )}
 
                     <View className="flex-row items-center mt-2 space-x-2">
                         {[...Array(5)].map((_, i) => (
@@ -109,7 +101,7 @@ export default function MovieDetails() {
                             {(movie.vote_average / 2).toFixed(1)}
                         </Text>
 
-                        {movie.runtime > 0 && (
+                        {movie.runtime && (
                             <Text className="text-gray-400 ml-2">
                                 {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
                             </Text>
@@ -139,22 +131,17 @@ export default function MovieDetails() {
                 {/* Content Sections */}
                 <View className="p-4">
                     {activeTab === 'synopsis' && (
-                        <Text className="text-white">
-                            {movie.overview || 'No synopsis available.'}
-                        </Text>
+                        <Text className="text-white">{movie.overview || 'No synopsis available.'}</Text>
                     )}
 
                     {activeTab === 'cast' && (
                         <View>
-                            {movie.credits?.cast.slice(0, 10).map((person) => (
-                                <View key={person.id} className="py-3 border-b border-gray-800">
+                            {movie.credits?.cast.slice(0, 10).map((person, index) => (
+                                <View key={index} className="py-3 border-b border-gray-800">
                                     <Text className="text-white font-medium">{person.name}</Text>
                                     <Text className="text-gray-400">{person.character}</Text>
                                 </View>
                             ))}
-                            {movie.credits?.cast.length === 0 && (
-                                <Text className="text-gray-400">No cast information available</Text>
-                            )}
                         </View>
                     )}
 
@@ -184,5 +171,6 @@ export default function MovieDetails() {
                 </TouchableOpacity>
             </ScrollView>
         </>
+
     );
 }
