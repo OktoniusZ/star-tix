@@ -14,6 +14,7 @@ export default function MovieDetails() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<TabType>('synopsis');
+    const [isBookmarked, setIsBookmarked] = useState(false);
 
     useEffect(() => {
         const loadMovie = async () => {
@@ -57,7 +58,7 @@ export default function MovieDetails() {
 
     return (
         <>
-            <Stack.Screen options={{ headerShown: false, statusBarBackgroundColor: 'black'}} />
+            <Stack.Screen options={{ headerShown: false, statusBarBackgroundColor: 'black' }} />
             <ScrollView className="flex-1 bg-black">
                 {/* Background & Header */}
                 <View className="relative h-96">
@@ -84,9 +85,22 @@ export default function MovieDetails() {
 
                 {/* Movie Title & Rating */}
                 <View className="px-4 mt-4">
-                    <Text className="text-white text-2xl font-bold">
-                        {movie.title} {releaseYear && `(${releaseYear})`}
-                    </Text>
+                    <View className="flex-row justify-between items-center">
+                        <Text className="text-white text-2xl font-bold">
+                            {movie.title}
+                        </Text>
+                        <TouchableOpacity onPress={() => setIsBookmarked(!isBookmarked)}>
+                            <Ionicons
+                                name={isBookmarked ? "bookmark" : "bookmark-outline"}
+                                size={24}
+                                color={isBookmarked ? "#8B5CF6" : "white"}
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    {releaseYear && (
+                        <Text className="text-gray-400">({releaseYear})</Text>
+                    )}
 
                     <View className="flex-row items-center mt-2 space-x-2">
                         {[...Array(5)].map((_, i) => (

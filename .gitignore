@@ -9,6 +9,8 @@ dist/
 web-build/
 expo-env.d.ts
 
+git-automation.sh
+
 # Native
 *.orig.*
 *.jks

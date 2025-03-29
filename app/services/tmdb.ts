@@ -1,14 +1,28 @@
 // app/services/tmdb.ts
 import axios from 'axios';
 import { TMDB_API_KEY, TMDB_BASE_URL } from '../config';
-
-interface TMDBMovie {
+// Add this at the top of your tmdb.ts
+export interface Genre {
+    id: number;
+    name: string;
+}
+// Update your TMDBMovie interface
+export interface TMDBMovie {
     id: number;
     title: string;
     poster_path: string | null;
+    backdrop_path: string | null; // Add this line
     vote_average: number;
     popularity: number;
-    // Add other fields you need
+    release_date?: string;
+    // Add other fields you might need
+}
+
+// Add this interface for the API response
+interface TMDBDiscoverResponse {
+    results: TMDBMovie[];
+    total_pages: number;
+    total_results: number;
 }
 
 export const fetchTrendingMovies = async (): Promise<TMDBMovie[]> => {
@@ -22,7 +36,30 @@ export const fetchTrendingMovies = async (): Promise<TMDBMovie[]> => {
         return [];
     }
 };
+// Add this to your existing tmdb.ts file
+export const fetchGenreImages = async (genreId: number): Promise<string> => {
+    try {
+        // Fetch 3 random popular movies from this genre
+        const response = await axios.get<{ results: TMDBMovie[] }>(
+            `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}` +
+            `&with_genres=${genreId}&sort_by=popularity.desc&page=1`
+        );
 
+        // Get a random movie from the first 3 results
+        const randomIndex = Math.floor(Math.random() * Math.min(3, response.data.results.length));
+        const movie = response.data.results[randomIndex];
+
+        // Return backdrop if available, otherwise poster, otherwise empty string
+        return movie?.backdrop_path
+            ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}`
+            : movie?.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : '';
+    } catch (error) {
+        console.error('Error fetching genre image:', error);
+        return '';
+    }
+};
 export const fetchPopularMovies = async (): Promise<TMDBMovie[]> => {
     try {
         const response = await axios.get<{ results: TMDBMovie[] }>(

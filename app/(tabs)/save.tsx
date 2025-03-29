@@ -1,20 +1,57 @@
-// app/(tabs)/save.tsx
 import { View, Text, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { StarIcon, TvIcon } from '@/app/components/Icons';
-import { BellIcon, MenuIcon, SearchIcon } from '@/app/components/Icons';
-import { useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { images } from '@/constants/images';
+
+const dummyBookmarks = [
+    {
+        id: 1,
+        title: 'Attack on Titan',
+        description: 'Humans fight giant humanoid creatures called Titans',
+        rating: 4.8,
+        thumbnail: images.anime1,
+    },
+    {
+        id: 2,
+        title: 'Jujutsu Kaisen',
+        description: 'A boy swallows a cursed talisman and becomes a sorcerer',
+        rating: 4.7,
+        thumbnail: images.anime2,
+    },
+    {
+        id: 3,
+        title: 'Demon Slayer',
+        description: 'A boy becomes a demon slayer to save his sister',
+        rating: 4.9,
+        thumbnail: images.anime3,
+    },
+    {
+        id: 4,
+        title: 'Demon Slayer',
+        description: 'A boy becomes a demon slayer to save his sister',
+        rating: 4.9,
+        thumbnail: images.anime4,
+    },
+];
 
 export default function SaveScreen() {
+    const [bookmarks, setBookmarks] = useState(dummyBookmarks);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const removeBookmark = (id: number) => {
+        setBookmarks(prev => prev.filter(item => item.id !== id));
+    };
+
     return (
         <View className="flex-1 bg-black">
-            {/* Header */}
+            {/* Header Section */}
             <View className="flex-row justify-between items-center p-4 border-b border-gray-800">
                 <TouchableOpacity>
-                    <MenuIcon />
+                    <Ionicons name="menu" size={24} color="white" />
                 </TouchableOpacity>
                 <Text className="text-white text-xl font-bold">Menu Bookmark</Text>
                 <TouchableOpacity className="relative">
-                    <BellIcon />
+                    <Ionicons name="notifications" size={24} color="white" />
                     <View className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
                 </TouchableOpacity>
             </View>
@@ -25,16 +62,18 @@ export default function SaveScreen() {
                     placeholder="Cari judul atau genre film.."
                     placeholderTextColor="#94A3B8"
                     className="flex-1 text-white"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
                 />
-                <SearchIcon size={20} color="#94A3B8" />
+                <Ionicons name="search" size={20} color="#94A3B8" />
             </View>
 
             {/* Bookmarked Items List */}
             <ScrollView className="mt-4">
-                {/* {bookmarks.map(movie => (
+                {bookmarks.map(movie => (
                     <View key={movie.id} className="mx-4 mb-4 p-3 bg-gray-900 rounded-lg flex-row">
                         <Image
-                            source={movie.image}
+                            source={movie.thumbnail}
                             className="w-16 h-24 rounded"
                             resizeMode="cover"
                         />
@@ -44,23 +83,30 @@ export default function SaveScreen() {
                                 <Text className="text-white font-bold flex-1" numberOfLines={1}>
                                     {movie.title}
                                 </Text>
-                                <TouchableOpacity onPress={() => removeBookmark(movie.id)}>
-                                    <Text className="text-red-500 text-lg">❌</Text>
+                                <TouchableOpacity
+                                    onPress={() => removeBookmark(movie.id)}
+                                    className="ml-2"
+                                >
+                                    <Ionicons name="close" size={20} color="white" />
                                 </TouchableOpacity>
                             </View>
 
                             <Text className="text-gray-400 text-xs mt-1" numberOfLines={2}>
-                                {movie.views} views • Description would go here
+                                {movie.description}
                             </Text>
 
                             <View className="flex-row items-center mt-2">
                                 {[...Array(5)].map((_, i) => (
-                                    <StarIcon
+                                    <Ionicons
                                         key={i}
-                                        filled={i < Math.floor(movie.rating)}
+                                        name={i < Math.floor(movie.rating) ? 'star' : 'star-outline'}
                                         size={14}
+                                        color="#FBBF24"
                                     />
                                 ))}
+                                <Text className="text-yellow-400 text-xs ml-1">
+                                    {movie.rating.toFixed(1)}
+                                </Text>
                             </View>
                         </View>
                     </View>
@@ -70,7 +116,7 @@ export default function SaveScreen() {
                     <Text className="text-gray-400 text-center mt-8">
                         No bookmarked movies yet
                     </Text>
-                )} */}
+                )}
             </ScrollView>
         </View>
     );
