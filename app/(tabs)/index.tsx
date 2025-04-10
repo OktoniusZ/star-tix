@@ -110,7 +110,7 @@ export default function Home() {
                 <TouchableOpacity>
                     <MenuIcon />
                 </TouchableOpacity>
-                <Text className="text-white text-xl font-bold">AniFlix</Text>
+                <Text className="text-white text-xl font-bold">StarTix</Text>
                 <TouchableOpacity className="relative">
                     <BellIcon />
                     <View className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
@@ -120,7 +120,7 @@ export default function Home() {
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Category Section - Now with TMDB Genres */}
                 <View className="px-4 mt-4">
-                    <Text className="text-white font-bold text-lg mb-3">Kategori</Text>
+                    <Text className="text-white font-bold text-lg mb-3">Category</Text>
                     <CategoryPills
                         categories={genres}
                         activeCategory={activeGenre}
@@ -145,7 +145,7 @@ export default function Home() {
                 {/* Trending Section */}
                 <View className="mt-6 px-4">
                     <View className="flex-row justify-between items-center mb-3">
-                        <Text className="text-white font-bold text-lg">Trending</Text>
+                        <Text className="text-white font-bold text-lg">Popular</Text>
                         <TouchableOpacity>
                             <Text className="text-purple-400">Lihat Semua</Text>
                         </TouchableOpacity>
@@ -159,7 +159,7 @@ export default function Home() {
 
                 {/* Recommendation Section */}
                 <View className="mt-6 px-4 pb-20">
-                    <Text className="text-white font-bold text-lg mb-3">Rekomendasi</Text>
+                    <Text className="text-white font-bold text-lg mb-3">Reccomendation</Text>
                     {recommendationsData.map(item => (
                         <RecommendationCard key={item.id} item={item} />
                     ))}

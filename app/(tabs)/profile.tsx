@@ -41,7 +41,7 @@ export default function ProfileScreen() {
                         onPress={() => setActiveTab('account')}
                     >
                         <Text className={`font-medium ${activeTab === 'account' ? 'text-white' : 'text-gray-700'}`}>
-                            Akun
+                            Account
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -49,7 +49,7 @@ export default function ProfileScreen() {
                         onPress={() => setActiveTab('balance')}
                     >
                         <Text className={`font-medium ${activeTab === 'balance' ? 'text-white' : 'text-gray-700'}`}>
-                            Saldo
+                            Balance
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -63,7 +63,7 @@ export default function ProfileScreen() {
                             className="w-24 h-24 rounded-full border-4 border-purple-500"
                         />
                         <TouchableOpacity className="mt-2">
-                            <Text className="text-purple-600 font-medium">Ubah Foto</Text>
+                            <Text className="text-purple-600 font-medium">Change Profille</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -77,7 +77,7 @@ export default function ProfileScreen() {
                                 onEdit={() => setEditingField('name')}
                             />
                             <ProfileField
-                                label="Nomor Telepon"
+                                label="Phone Number"
                                 value={userData.phone}
                                 editing={editingField === 'phone'}
                                 onEdit={() => setEditingField('phone')}
@@ -97,7 +97,7 @@ export default function ProfileScreen() {
                             <Text className="text-lg font-bold mb-2">Saldo Anda</Text>
                             <Text className="text-3xl font-bold text-purple-600 mb-4">Rp 1.250.000</Text>
                             <TouchableOpacity className="bg-purple-600 py-3 rounded-lg items-center">
-                                <Text className="text-white font-medium">Top Up Saldo</Text>
+                                <Text className="text-white font-medium">Top Up Balance</Text>
                             </TouchableOpacity>
                         </View>
                     )}
@@ -105,7 +105,7 @@ export default function ProfileScreen() {
                     {/* Logout Button */}
                     <TouchableOpacity className="flex-row items-center justify-center py-4 mb-8">
                         <Ionicons name="log-out" size={20} color="#ef4444" />
-                        <Text className="text-red-500 font-medium ml-2">Keluar / Log out</Text>
+                        <Text className="text-red-500 font-medium ml-2">Log out</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </View>

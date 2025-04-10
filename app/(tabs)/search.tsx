@@ -48,14 +48,6 @@ export default function Search() {
         console.log('Searching for:', searchQuery);
     };
 
-    // // In your Search.tsx
-    // const handleGenrePress = (genreId: number, genreName: string) => {
-    //     navigation.navigate('GenreMovies', {
-    //         genreId,
-    //         genreName
-    //     });
-    // };
-
     if (loading) {
         return (
             <View className="flex-1 bg-black justify-center items-center">
@@ -79,7 +71,7 @@ export default function Search() {
                 <TouchableOpacity>
                     <MenuIcon />
                 </TouchableOpacity>
-                <Text className="text-white text-xl font-bold">Menu Pencarian</Text>
+                <Text className="text-white text-xl font-bold">Search Movies</Text>
                 <TouchableOpacity className="relative">
                     <BellIcon />
                     <View className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />

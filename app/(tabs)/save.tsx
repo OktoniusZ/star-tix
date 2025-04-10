@@ -49,7 +49,7 @@ export default function SaveScreen() {
                 <TouchableOpacity>
                     <Ionicons name="menu" size={24} color="white" />
                 </TouchableOpacity>
-                <Text className="text-white text-xl font-bold">Menu Bookmark</Text>
+                <Text className="text-white text-xl font-bold">Bookmark</Text>
                 <TouchableOpacity className="relative">
                     <Ionicons name="notifications" size={24} color="white" />
                     <View className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
@@ -59,7 +59,7 @@ export default function SaveScreen() {
             {/* Search Bar */}
             <View className="mx-4 mt-4 flex-row items-center bg-gray-800 rounded-lg px-3 py-2">
                 <TextInput
-                    placeholder="Cari judul atau genre film.."
+                    placeholder="Search movies or genres..."
                     placeholderTextColor="#94A3B8"
                     className="flex-1 text-white"
                     value={searchQuery}
