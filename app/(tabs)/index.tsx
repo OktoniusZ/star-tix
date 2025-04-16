@@ -5,6 +5,7 @@ import CategoryPills from '../components/CategoryPills';
 import TrendingCard from '../components/TrendingCard';
 import RecommendationCard from '../components/RecommendationCard';
 import { fetchTrendingMovies, fetchPopularMovies, fetchGenres, fetchMoviesByGenre } from '../services/tmdb';
+import NotificationPanel from '../components/NotificationPanel';
 
 interface MovieCard {
     id: number;
@@ -23,6 +24,7 @@ export default function Home() {
     const [activeGenre, setActiveGenre] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [showNotifications, setShowNotifications] = useState(false);
 
     useEffect(() => {
         const loadData = async () => {
@@ -111,7 +113,10 @@ export default function Home() {
                     <MenuIcon />
                 </TouchableOpacity>
                 <Text className="text-white text-xl font-bold">StarTix</Text>
-                <TouchableOpacity className="relative">
+                <TouchableOpacity
+                    className="relative"
+                    onPress={() => setShowNotifications(!showNotifications)}
+                >
                     <BellIcon />
                     <View className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
                 </TouchableOpacity>
@@ -165,6 +170,10 @@ export default function Home() {
                     ))}
                 </View>
             </ScrollView>
+            <NotificationPanel
+                visible={showNotifications}
+                onClose={() => setShowNotifications(false)}
+            />
         </View>
     );
 }
